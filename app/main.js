@@ -1,8 +1,9 @@
 // Module to control application life.
-var app = require('app'); 
+const electron = require('electron')
+// Module to control application life.
+const {app, BrowserWindow} = electron
 
 // Module to create native browser window.
-var BrowserWindow = require('browser-window');
 
 var mainWindow = null;
 
@@ -21,7 +22,7 @@ app.on('ready', function () {
   mainWindow = new BrowserWindow({ width: 800, height: 600 });
 
   // and load the index.html of the app.
-  mainWindow.loadUrl('file://' + __dirname + '/index.html');
+  mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   // Open the devtools.
   // mainWindow.openDevTools();

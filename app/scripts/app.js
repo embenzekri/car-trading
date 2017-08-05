@@ -11,8 +11,8 @@
     ])
     .config(['$routeProvider', function ($routeProvider) {
             $routeProvider.when('/', {
-                templateUrl: _templateBase + '/customer/customer.html' ,
-                controller: 'customerController',
+                templateUrl: _templateBase + '/trading/trading.html' ,
+                controller: 'tradingController',
                 controllerAs: '_ctrl'
             });
             $routeProvider.otherwise({ redirectTo: '/' });
