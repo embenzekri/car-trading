@@ -90,18 +90,19 @@
                     <th md-column md-numeric md-order-by="id" md-desc><span>Numéro</span></th>
                     <th md-column md-order-by="make"><span>Marque & Modèle</span></th>
                     <th md-column md-order-by="vin"><span>Matricule</span></th>
+                    <th md-column md-order-by="vin"><span>Acheteur</span></th>
+                    <th md-column md-order-by="vin"><span>CIN</span></th>
                 </tr>
                 </thead>
                 <tbody md-body>
                 <tr md-row md-select="trading" md-on-select="logItem" md-auto-select="options.autoSelect"
                     ng-repeat="trading in tradings | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
                     <td md-cell>{{trading.make}}</td>
-                    <td md-cell>
-                        <md-select ng-model="dessert.type" placeholder="Other">
-                            <md-option ng-value="type" ng-repeat="type in getTypes()">{{type}}</md-option>
-                        </md-select>
-                    </td>
                     <td md-cell>{{trading.vin}}</td>
+                    <td md-cell>
+                        <md-icon class="md-secondary" ng-click="onDelete(trading)" aria-label="Chat"
+                                 md-svg-icon="communication"></md-icon>
+                    </td>
                 </tr>
                 </tbody>
             </table>

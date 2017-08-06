@@ -58,38 +58,74 @@
             return deferred.promise;
         }
 
-        function getTradingByName(name) {
+        function nextId() {
             var deferred = $q.defer();
-            var query = "SELECT * FROM tradings WHERE name LIKE  '" + name + "%'";
-            connection.query(query, [name], function (err, rows) {
-                console.log(err)
-                if (err) deferred.reject(err);
 
-                deferred.resolve(rows);
+            db.get("autoincrement", {}, function callback(err, result) {
+                if (!err) {
+                    updateId(result, deferred)
+                    return result.value +1;
+                }
+                else {
+                    insertNewId();
+                    deferred.resolve(1);
+                }
             });
+
             return deferred.promise;
         }
-
-        function createTrading(trading) {
-            console.log("Inserting");
-            console.log(trading);
-            var deferred = $q.defer();
+        function updateId(object, deferred) {
+            object.value += 1;
+            db.put(object, function callback(err, result) {
+                if (!err) {
+                    console.log(result, 'Id Updated success');
+                    deferred.resolve(object.value);
+                }
+                else {
+                    console.log('id updated error');
+                }
+            });
+        }
+        function insertNewId() {
             var object = {
-                _id: new Date().toISOString().slice(0, 19),
-                make: trading.make,
-                vin: trading.vin
+                type: 'autoincrement',
+                _id: 'autoincrement',
+                value: 1
             };
             db.put(object, function callback(err, result) {
                 if (!err) {
-                    console.log('Inserted success');
-                    console.log(result);
-                    deferred.resolve(result.insertId);
+                    console.log(result, 'Inserted success new id');
                 }
                 else {
-                    console.log('Insertion error');
-                    console.dir(err);
+                    console.log('id insertion error');
                 }
             });
+        }
+        function createTrading(trading) {
+            console.log("Inserting");
+            console.log(trading);
+            nextId().then(function (id) {
+                console.log(id, "new id retrieved");
+                var deferred = $q.defer();
+                var object = {
+                    type: 'trading',
+                    _id: new Date().toISOString().slice(0, 19),
+                    make: trading.make,
+                    vin: trading.vin
+                };
+                db.put(object, function callback(err, result) {
+                    if (!err) {
+                        console.log('Inserted success');
+                        console.log(result);
+                        deferred.resolve(result.insertId);
+                    }
+                    else {
+                        console.log('Insertion error');
+                        console.dir(err);
+                    }
+                });
+            });
+
             return deferred.promise;
         }
 
