@@ -8,11 +8,11 @@
         </md-toolbar>
         <md-input-container style="margin-bottom:0">
             <label>Customer Name</label>
-            <input required name="customerName" ng-model="_ctrl.filterText" ng-change="_ctrl.filter()">
+            <input required name="customerName" ng-model="filterText" ng-change="filter()">
         </md-input-container>
         <md-list>
-            <md-list-item ng-repeat="it in _ctrl.tradings">
-                <md-button ng-click="_ctrl.selectCustomer(it, $index)" ng-class="{'selected' : it === _ctrl.selected }">
+            <md-list-item ng-repeat="it in tradings">
+                <md-button ng-click="selectCustomer(it, $index)" ng-class="{'selected' : it === selected }">
                     {{it.name}}
                 </md-button>
             </md-list-item>
@@ -24,92 +24,91 @@
             <md-toolbar class="md-accent">
                 <div class="md-toolbar-tools">
                     <md-truncate flex>
-                        Here is an awesome title that will shrink and overflow.
+                        Gestion des achats & ventes
                     </md-truncate>
-
-                    <md-button class="md-icon-button md-fab-mini" aria-label="Favorite">
-                        <md-icon md-svg-icon="img/icons/favorite.svg"></md-icon>
-                    </md-button>
                 </div>
             </md-toolbar>
         </div>
         <md-content layout-padding>
             <div>
-                <form name="userForm">
+                <form name="userForm" novalidate>
 
                     <div layout-gt-xs="row">
                         <md-input-container class="md-block" flex-gt-xs>
                             <label>Marque & Modèle</label>
-                            <input ng-model="_ctrl.selected.make" type="text">
+                            <input ng-model="newEntry.make" type="text">
                         </md-input-container>
                         <md-input-container class="md-block" flex-gt-xs>
                             <label>Matricule</label>
-                            <input ng-model="_ctrl.selected.vin" type="text">
+                            <input ng-model="newEntry.vin" type="text">
                         </md-input-container>
-                        <md-switch class="md-block" flex-gt-xs ng-model="data.cb2" aria-label="Switch 2"
+                        <md-switch class="md-block" flex-gt-xs ng-model="selled" aria-label="Switch 2"
                                    ng-true-value="'oui'" ng-false-value="'non'"
                                    class="md-warn">
                             Vendue ? {{ data.cb2 }}
                         </md-switch>
 
                     </div>
-                    <div ng-show="data.cb2 == 'oui'">
-                    <h2>Informations de vente</h2>
-                    <div layout-gt-xs="row">
+                    <div ng-show="selled == 'oui'">
+                        <h2>Informations de vente</h2>
+                        <div layout-gt-xs="row">
 
-                        <md-input-container class="md-block" flex-gt-xs>
-                            <label>Acheteur</label>
-                            <input ng-model="_ctrl.selected.buyer" ng-required="true">
-                        </md-input-container>
-                        <md-input-container  class="md-block" flex-gt-xs>
-                            <label>Observations</label>
-                            <input ng-model="_ctrl.selected.remarks" type="text">
-                        </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Acheteur</label>
+                                <input ng-model="newEntry.buyer" ng-required="true">
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Observations</label>
+                                <input ng-model="newEntry.remarks" type="text">
+                            </md-input-container>
 
-                    </div>
+                        </div>
                     </div>
                     <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
-                        <md-button class="md-raised md-info" ng-click="_ctrl.createTrading()">Nouvelle entrée
+                        <md-button class="md-raised md-primary" ng-click="saveTrading()">Savegarder
                         </md-button>
-                        <md-button class="md-raised md-primary" ng-click="_ctrl.saveTrading()">Savegarder
+                        <md-button class="md-raised md-info" ng-click="createTrading()">Nouveaux Achat
                         </md-button>
                     </section>
                 </form>
             </div>
         </md-content>
 
-        <md-toolbar layout="row" class="md-whiteframe-z1">
-            <md-button class="menu" hide-gt-sm ng-click="ul.toggleList()" aria-label="Show User List">
-                <md-icon md-svg-icon="menu"></md-icon>
-            </md-button>
-            <h1>{{ _ctrl.selected.name }}</h1>
+        <md-toolbar class="md-primary" layout="row">
+            <div class="md-toolbar-tools">
+                <md-truncate flex>
+                    Liste {{count}}
+                </md-truncate>
+            </div>
         </md-toolbar>
 
-        <md-content flex id="content">
-            <md-table-container>
-                <table md-table md-row-select multiple ng-model="selected" md-progress="promise">
-                    <thead md-head md-order="query.order" md-on-reorder="getDesserts">
-                    <tr md-row>
-                        <th md-column md-order-by="nameToLower"><span>Numéro</span></th>
-                        <th md-column md-numeric><span>Marque & Modèle</span></th>
-                        <th md-column md-numeric>Matricule</th>
-                        <th md-column md-numeric>Acheteur</th>
-                        <th md-column md-numeric>Observations</th>
-                        <th md-column md-numeric>Vendue</th>
-                    </tr>
-                    </thead>
-                    <tbody md-body>
-                    <tr md-row md-auto-select>
-                        <td md-cell>dessert.name</td>
-                        <td md-cell>dessert.name</td>
-                        <td md-cell>dessert.name</td>
-                        <td md-cell>dessert.name</td>
-                        <td md-cell>dessert.name</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </md-table-container>
-        </md-content>
-
+        <md-table-container>
+            <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected"
+                   md-progress="promise">
+                <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
+                <tr md-row>
+                    <th md-column md-numeric md-order-by="id" md-desc><span>Numéro</span></th>
+                    <th md-column md-order-by="make"><span>Marque & Modèle</span></th>
+                    <th md-column md-order-by="vin"><span>Matricule</span></th>
+                </tr>
+                </thead>
+                <tbody md-body>
+                <tr md-row md-select="trading" md-on-select="logItem" md-auto-select="options.autoSelect"
+                    ng-repeat="trading in tradings | filter: filter.search | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
+                    <td md-cell>{{trading.make}}</td>
+                    <td md-cell>
+                        <md-select ng-model="dessert.type" placeholder="Other">
+                            <md-option ng-value="type" ng-repeat="type in getTypes()">{{type}}</md-option>
+                        </md-select>
+                    </td>
+                    <td md-cell>{{trading.vin}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </md-table-container>
+        <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page"
+                             md-total="{{tradings.length}}" md-page-select="options.pageSelect"
+                             md-boundary-links="options.boundaryLinks"
+                             md-on-paginate="logPagination"></md-table-pagination>
     </div>
 </div>
