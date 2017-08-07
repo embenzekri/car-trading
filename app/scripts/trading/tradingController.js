@@ -33,6 +33,8 @@
             page: 1
         };
 
+        self.buyDate = new Date();
+        self.sellDate = new Date();
         self.selected = [];
         self.tradings = [];
         self.selectedIndex = 0;

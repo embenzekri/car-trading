@@ -1,24 +1,4 @@
 <div style="width:100%" layout="row">
-    <md-sidenav class="site-sidenav md-sidenav-left md-whiteframe-z2"
-                md-component-id="left"
-                md-is-locked-open="$mdMedia('gt-sm')">
-
-        <md-toolbar layout="row" class="md-whiteframe-z1">
-            <h1>Tradings</h1>
-        </md-toolbar>
-        <md-input-container style="margin-bottom:0">
-            <label>Customer Name</label>
-            <input required name="customerName" ng-model="filterText" ng-change="filter()">
-        </md-input-container>
-        <md-list>
-            <md-list-item ng-repeat="it in tradings">
-                <md-button ng-click="selectCustomer(it, $index)" ng-class="{'selected' : it === selected }">
-                    {{it.name}}
-                </md-button>
-            </md-list-item>
-        </md-list>
-    </md-sidenav>
-
     <div flex layout="column" tabIndex="-1" role="main" class="md-whiteframe-z2">
         <div layout="row" class="md-whiteframe-z1">
             <md-toolbar class="md-accent">
@@ -42,6 +22,14 @@
                             <label>Matricule</label>
                             <input ng-model="newEntry.vin" type="text">
                         </md-input-container>
+                        <md-input-container class="md-block" flex-gt-xs>
+                            <label>Vendeur</label>
+                            <input ng-model="newEntry.seller" type="text">
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-xs>
+                            <label>Date d'achat</label>
+                            <md-datepicker ng-model="buyDate" md-placeholder="Enter date"></md-datepicker>
+                        </md-input-container>
                         <md-switch class="md-block" flex-gt-xs ng-model="selled" aria-label="Switch 2"
                                    ng-true-value="'oui'" ng-false-value="'non'"
                                    class="md-warn">
@@ -52,10 +40,13 @@
                     <div ng-show="selled == 'oui'">
                         <h2>Informations de vente</h2>
                         <div layout-gt-xs="row">
-
                             <md-input-container class="md-block" flex-gt-xs>
                                 <label>Acheteur</label>
                                 <input ng-model="newEntry.buyer" ng-required="true">
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Date de vente</label>
+                                <md-datepicker ng-model="sellDate" md-placeholder="Enter date"></md-datepicker>
                             </md-input-container>
                             <md-input-container class="md-block" flex-gt-xs>
                                 <label>Observations</label>

@@ -2,16 +2,6 @@
     'use strict';
     var db = new PouchDB('mydb-idb');
 
-    /*db.allDocs().then(function (result) {
-        // Promise isn't supported by all browsers; you may want to use bluebird
-        return Promise.all(result.rows.map(function (row) {
-            return db.remove(row.id, row.value.rev);
-        }));
-    }).then(function () {
-        // done!
-    }).catch(function (err) {
-        // error!
-    });*/
     db.info().then(function (info) {
         console.log('Database initialized');
     }).catch(function (err) {
@@ -64,7 +54,7 @@
             db.get("autoincrement", {}, function callback(err, result) {
                 if (!err) {
                     updateId(result, deferred)
-                    return result.value +1;
+                    return result.value + 1;
                 }
                 else {
                     insertNewId();
@@ -74,6 +64,7 @@
 
             return deferred.promise;
         }
+
         function updateId(object, deferred) {
             object.value += 1;
             db.put(object, function callback(err, result) {
@@ -86,6 +77,7 @@
                 }
             });
         }
+
         function insertNewId() {
             var object = {
                 type: 'autoincrement',
@@ -101,6 +93,7 @@
                 }
             });
         }
+
         function createTrading(trading) {
             console.log("Inserting");
             console.log(trading);
