@@ -10,6 +10,16 @@
     angular.module('app')
         .service('tradingService', ['$q', TradingService]);
 
+    /*db.allDocs().then(function (result) {
+        // Promise isn't supported by all browsers; you may want to use bluebird
+        return Promise.all(result.rows.map(function (row) {
+            return db.remove(row.id, row.value.rev);
+        }));
+    }).then(function () {
+        // done!
+    }).catch(function (err) {
+        // error!
+    });*/
     function TradingService($q) {
         return {
             getTradings: getAll,
@@ -30,7 +40,8 @@
 
                 for (k in row) {
                     var item = row[k].doc
-                    items.push({id: item._id, make: item.make, vin: item.vin});
+                    if(item.type != undefined && item.type != 'autoincrement')
+                        items.push({id: item._id, make: item.make, vin: item.vin, seller: item.seller, buyDate: item.buyDate, buyer: item.buyer, remarks: item.remarks, sellDate: item.sellDate});
                 }
                 deferred.resolve(items);
             });
@@ -97,15 +108,23 @@
         function createTrading(trading) {
             console.log("Inserting");
             console.log(trading);
+            var deferred = $q.defer();
             nextId().then(function (id) {
                 console.log(id, "new id retrieved");
-                var deferred = $q.defer();
+                var created = new Date().toISOString().slice(0, 19);
                 var object = {
                     type: 'trading',
-                    _id: new Date().toISOString().slice(0, 19),
+                    _id: ""+id,
                     make: trading.make,
-                    vin: trading.vin
+                    vin: trading.vin,
+                    seller: trading.seller,
+                    buyDate: trading.buyDate,
+                    remarks: trading.remarks
                 };
+                if (trading.selled == 'oui') {
+                    object.buyer = trading.buyer;
+                    object.sellDate = trading.sellDate;
+                }
                 db.put(object, function callback(err, result) {
                     if (!err) {
                         console.log('Inserted success');

@@ -7,14 +7,17 @@
         var self = $scope;
         $scope.logItem = function (item) {
             console.log(item, 'was selected');
+            if(item.sellDate != undefined){
+                item.sellDate = new Date(item.sellDate);
+            }
+            if(item.buyDate != undefined){
+                item.buyDate = new Date(item.buyDate);
+            }
             self.newEntry = item;
         };
-        self.count= 34;
-        //$scope.count= 44;
-        $scope.limitOptions = [5, 10, 20,30];
         $scope.itemSelected = []
         $scope.selected = [];
-        $scope.limitOptions = [5, 10, 15];
+        $scope.limitOptions = [10, 15, 20];
 
         $scope.options = {
             rowSelection: true,
@@ -32,9 +35,7 @@
             limit: 5,
             page: 1
         };
-
-        self.buyDate = new Date();
-        self.sellDate = new Date();
+        emptyNewEntry();
         self.selected = [];
         self.tradings = [];
         self.selectedIndex = 0;
@@ -44,15 +45,16 @@
         self.saveTrading = saveTrading;
         self.createTrading = createTrading;
         self.filter = filterTrading;
+        self.emptyNewEntry = emptyNewEntry;
         self.onDelete = function($event) {
             console.log($event, "delete");
         };
-        console.log("conteoller initialized");
+        console.log("controller initialized");
         // Load initial data
         getAllTradings();
         self.query = {
             order: 'name',
-            limit: 5,
+            limit: 10,
             page: 1
         };
         //----------------------
@@ -83,7 +85,7 @@
 
         function saveTrading($event) {
             console.log(self.newEntry);
-
+            var e = $event;
             if (self.selected != null && self.selected.trading_id != null) {
                 tradingService.update(self.selected).then(function (affectedRows) {
                     $mdDialog.show(
@@ -93,7 +95,7 @@
                             .title('Success')
                             .content('Data Updated Successfully!')
                             .ok('Ok')
-                            .targetEvent($event)
+                            .targetEvent(e)
                     );
                 });
             }
@@ -106,12 +108,13 @@
                             .title('Erreur de validation')
                             .content('Des informations sont manquantes')
                             .ok('Ok')
-                            .targetEvent($event)
+                            .targetEvent(e)
                     );
                 } else {
-                    tradingService.create(self.selected).then(function (affectedRows) {
+                    tradingService.create(self.newEntry).then(function (affectedRows) {
                         console.log(affectedRows);
-                        self.tradings.push(self.selected);
+                        //self.tradings.push(self.selected);
+                        getAllTradings();
                         $mdDialog.show(
                             $mdDialog
                                 .alert()
@@ -119,7 +122,7 @@
                                 .title('Success')
                                 .content('Data Added Successfully!')
                                 .ok('Ok')
-                                .targetEvent($event)
+                                .targetEvent(e)
                         );
                     });
                 }
@@ -127,7 +130,7 @@
         }
 
         function isValid() {
-            if (self.newEntry == undefined || self.newEntry.make == undefined || self.newEntry.vin == undefined) {
+            if (self.newEntry == undefined || self.newEntry.make == "" || self.newEntry.vin == "") {
                 return false;
             } else {
                 return true;
@@ -156,6 +159,19 @@
                     self.selected = tradings[0];
                 });
             }
+        }
+
+        function emptyNewEntry() {
+            self.newEntry = {};
+            self.newEntry.make = "";
+            self.newEntry.vin = "";
+            self.newEntry.seller = "";
+            self.newEntry.buyDate = new Date();
+            self.newEntry.selled = "non";
+
+            self.newEntry.buyer = "";
+            self.newEntry.sellDate = new Date();
+            self.newEntry.remarks = "";
         }
     }
 
